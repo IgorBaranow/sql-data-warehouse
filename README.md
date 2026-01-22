@@ -53,7 +53,7 @@ Visual representation of how data moves from CSV extraction to the final analyti
 
 ## 📂 Repository Structure
 A transparent view of the project organization:
-
+```text
 sql-data-warehouse/
 │
 ├── datasets/               # Raw datasets used for the project (ERP and CRM data)
@@ -69,7 +69,7 @@ sql-data-warehouse/
 ├── tests/                  # Data Quality validation scripts
 │
 └── README.md               # Project overview and instructions
-
+```
 
 ---
 
