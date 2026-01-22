@@ -1,40 +1,105 @@
-# 🛒 Sales Data Warehouse Project
+# Data Warehouse and Analytics Project
 
-![Status](https://img.shields.io/badge/Status-Completed-success)
-![SQL](https://img.shields.io/badge/Language-T--SQL-blue)
-![Architecture](https://img.shields.io/badge/Architecture-Medallion-purple)
+## 📖 Executive Summary
+This project demonstrates an **End-to-End Data Engineering** solution designed to analyze sales performance by integrating data from distinct source systems (ERP and CRM).
 
-## 👋 Introduction
-Welcome to my SQL Data Warehouse project! I built this project to practice **Data Engineering** skills and understand how to transform raw business data into meaningful insights.
+The objective was to transform raw, unstructured data into a performant **Data Warehouse** using **Microsoft SQL Server**. The solution follows the **Medallion Architecture** (Bronze, Silver, Gold) to ensure data quality, scalability, and ease of reporting.
 
-The goal was to take messy CSV files from two different systems (ERP and CRM), clean them up, and build a structured Data Warehouse capable of answering business questions.
+---
 
-## 🎯 What I Built
-I simulated a real-world scenario where a company needs to analyze their sales performance.
-* **ETL Pipeline:** I built a process to extract data, clean it, and load it into a Data Warehouse.
-* **Data Modeling:** I designed a Star Schema (Fact and Dimensions) to make reporting easy and fast.
-* **Data Quality:** I focused on fixing issues like null values, duplicates, and inconsistent formatting.
+## 🛠️ Architecture & Methodology
+The project is built using a **Multi-Layer Architecture** to decouple raw data ingestion from business logic.
 
-## 🛠️ Architecture (Medallion)
-I followed the **Medallion Architecture** (Bronze, Silver, Gold) because it keeps the data organized:
+![Architecture Diagram](docs/DWH_architecture.png)
 
-* **🥉 Bronze Layer:** Holds the raw data exactly as it came from the source (CSV files).
-* **🥈 Silver Layer:** This is where the cleanup happens. I standardized date formats and merged data from ERP and CRM.
-* **🥇 Gold Layer:** The final data model ready for analysis. I created a Fact table for sales and Dimension tables for Products and Customers.
+### 1. 🥉 Bronze Layer (Raw Data)
+* **Purpose:** Ingest raw CSV datasets from source systems.
+* **Action:** Bulk loading data "as-is" to preserve original state.
+* **Key Challenge:** Handling inconsistent file formats and preventing data loss during ingestion.
 
-## 🔎 Key Insights
-After building the warehouse, I wrote SQL queries to find answers to:
-* Who are our best customers? (RFM Analysis)
-* Which product categories are selling the best?
-* How are sales growing year over year?
+### 2. 🥈 Silver Layer (Cleaned & Conformed)
+* **Purpose:** Data cleansing, standardization, and normalization.
+* **Transformations:**
+    * Standardized date formats and string casing.
+    * Handled missing values (NULLs) and duplicates.
+    * Integrated data from ERP (Product/Location) and CRM (Customer) systems.
+* **Data Quality:** Implemented validation checks to ensure logical consistency (e.g., `Order Date < Ship Date`).
 
-## 💻 Tech Stack
-* **Database:** Microsoft SQL Server
-* **Language:** T-SQL
-* **Concepts Used:** ETL, Data Cleaning, Star Schema, Primary/Foreign Keys, Window Functions.
+### 3. 🥇 Gold Layer (Dimensional Model)
+* **Purpose:** Reporting and analytics optimization.
+* **Modeling:** Designed a **Star Schema** with Fact and Dimension tables.
+* **Enrichment:**
+    * Generated **Surrogate Keys** for referential integrity.
+    * Aggregated metrics for fast query performance.
 
-## 🚀 How to Run
-1.  Clone this repo.
-2.  Run `scripts/init_database.sql` to create the database.
-3.  Execute the scripts in the `scripts/` folder in order (Bronze -> Silver -> Gold).
-4.  Check out the queries in `analytics/` to see the results!
+---
+
+## 📊 Data Model & Flow
+To ensure data integrity and traceability, I designed a comprehensive data flow and integration model.
+
+### Dimensional Model (Star Schema)
+The Gold Layer allows for efficient querying by connecting the centralized Fact table to enriched Dimensions.
+
+![Data Model](docs/data_model.png)
+
+### ETL Pipeline Flow
+Visual representation of how data moves from CSV extraction to the final analytics layer.
+
+![Data Flow](docs/data_flow.png)
+
+> **Documentation:** For full column details and schema definitions, please refer to the [Data Catalog](docs/data_catalog.md).
+
+---
+
+## 📂 Repository Structure
+A transparent view of the project organization:
+
+sql-data-warehouse/
+│
+├── datasets/               # Raw datasets used for the project (ERP and CRM data)
+│
+├── docs/                   # Architecture diagrams and Data Catalog
+│
+├── scripts/                # SQL scripts for ETL and transformations
+│   ├── bronze/             # DDL & Loading Stored Procedures for Bronze layer
+│   ├── silver/             # DDL & Transformation Logic for Silver layer
+│   ├── gold/               # DDL & Views for Gold layer (Star Schema)
+│   └── init_database.sql   # Database creation script
+│
+├── tests/                  # Data Quality validation scripts
+│
+└── README.md               # Project overview and instructions
+
+
+---
+
+## 🚀 How to Run the Project
+To replicate this Data Warehouse locally:
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/IgorBaranow/sql-data-warehouse.git
+    ```
+
+2.  **Set Up the Database:**
+    Open **SQL Server Management Studio (SSMS)** and run the `scripts/init_database.sql` script to create the database and schemas.
+
+3.  **Execute the ETL Pipeline:**
+    Run the scripts in the following order:
+
+    * **1. Load Bronze Layer (Ingestion):**
+        ```sql
+        EXEC bronze.load_bronze;
+        ```
+    * **2. Load Silver Layer (Cleansing):**
+        ```sql
+        EXEC silver.load_silver;
+        ```
+    * **3. Generate Gold Layer (Star Schema Views):**
+        Execute the `scripts/gold/ddl_gold.sql` script to create the analytical views.
+
+4.  **Verify Data:**
+    Run the quality check scripts located in the `tests/` folder to ensure data integrity.
+
+📬 Contact
+If you have any questions about the architecture or implementation, feel free to reach out!
